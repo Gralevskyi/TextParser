@@ -12,40 +12,37 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.gralevskyi.resttextparser.constraints.UniqueWordsListNameForCurrentUser;
+import com.gralevskyi.resttextparser.constraints.UniqueWordsUnitNameForCurrentUser;
+import com.gralevskyi.resttextparser.domain.user.User;
 
-import lombok.Data;
-
-@Data
 @Entity
-public class SavedWordsList {
+public class TextAndParsedWordsUnit {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column(length = 2000)
-	@Size(max = 2000)
 	private String userText;
 
 	@ElementCollection
-	private Map<String, Integer> wordsMap;
+	private Map<String, Integer> parsedWords;
 
 	@NotNull
-	@Size(min = 5, message = "Name must be at least 5 character long")
-	@UniqueWordsListNameForCurrentUser
+	@Size(min = 5, message = "Name must be at least 5 character long.")
+	@UniqueWordsUnitNameForCurrentUser
 	private String name;
 
 	@ManyToOne
 	User user;
 
-	public SavedWordsList(String userText, Map<String, Integer> wordsMap, String name) {
+	public TextAndParsedWordsUnit(String userText, Map<String, Integer> parsedWords, String name) {
 		this.userText = userText;
-		this.wordsMap = wordsMap;
+		this.parsedWords = parsedWords;
 		this.name = name;
 	}
 
-	public SavedWordsList() {
+	public TextAndParsedWordsUnit() {
 
 	}
 
@@ -78,12 +75,12 @@ public class SavedWordsList {
 		this.userText = userText;
 	}
 
-	public Map<String, Integer> getWordsMap() {
-		return wordsMap;
+	public Map<String, Integer> getParsedWords() {
+		return parsedWords;
 	}
 
-	public void setWordsMap(Map<String, Integer> wordsMap) {
-		this.wordsMap = wordsMap;
+	public void setParsedWords(Map<String, Integer> parsedWords) {
+		this.parsedWords = parsedWords;
 	}
 
 }

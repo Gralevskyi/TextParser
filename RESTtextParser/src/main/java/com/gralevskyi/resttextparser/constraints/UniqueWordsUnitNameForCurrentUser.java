@@ -11,11 +11,11 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = UniqueWordsListNameForCurrentUserValidator.class)
+@Constraint(validatedBy = UniqueWordsUnitNameForCurrentUserValidator.class)
 @Retention(RUNTIME)
 @Target(ElementType.FIELD)
-public @interface UniqueWordsListNameForCurrentUser {
-	String message() default "You have already created List with this name. Chose another name or delete saved list.";
+public @interface UniqueWordsUnitNameForCurrentUser {
+	String message() default "You have already created words unit with this name. Please, choose another name.";
 
 	Class<?>[] groups() default {};
 

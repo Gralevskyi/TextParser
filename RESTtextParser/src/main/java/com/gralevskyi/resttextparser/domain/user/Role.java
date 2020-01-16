@@ -1,4 +1,4 @@
-package com.gralevskyi.resttextparser.domain;
+package com.gralevskyi.resttextparser.domain.user;
 
 import java.util.List;
 

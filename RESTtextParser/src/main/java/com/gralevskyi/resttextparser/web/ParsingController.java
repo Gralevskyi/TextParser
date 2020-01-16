@@ -1,4 +1,4 @@
-package com.gralevskyi.resttextparser.web.api;
+package com.gralevskyi.resttextparser.web;
 
 import java.util.Map;
 
@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gralevskyi.resttextparser.data.UserRepository;
 import com.gralevskyi.resttextparser.data.WordsRepository;
-import com.gralevskyi.resttextparser.domain.SavedWordsList;
-import com.gralevskyi.resttextparser.domain.TextDto;
+import com.gralevskyi.resttextparser.domain.TextAndParsedWordsUnit;
+import com.gralevskyi.resttextparser.domain.TextForParsing;
 import com.gralevskyi.resttextparser.domain.TextParser;
-import com.gralevskyi.resttextparser.domain.User;
+import com.gralevskyi.resttextparser.domain.user.User;
 import com.gralevskyi.resttextparser.security.jwt.JwtTokenProvider;
 
 @RestController
 @RequestMapping(path = "/parse", produces = "application/json")
 @CrossOrigin(origins = "*")
-public class RestWordsPageController {
+public class ParsingController {
 
 	@Autowired
 	TextParser textParser;
@@ -37,45 +37,35 @@ public class RestWordsPageController {
 	JwtTokenProvider jwtTokenProvider;
 
 	@Autowired
-	RestWordsPageController(WordsRepository wordsRepo, UserRepository userRepo, JwtTokenProvider jwtTokenProvider) {
+	ParsingController(WordsRepository wordsRepo, UserRepository userRepo, JwtTokenProvider jwtTokenProvider) {
 		this.wordsRepo = wordsRepo;
 		this.userRepo = userRepo;
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Object> showWordsPage(@Valid @RequestBody TextDto text, Errors errors) {
+	public ResponseEntity<Object> parseText(@Valid @RequestBody TextForParsing textForParsing, Errors errors) {
 		if (errors.hasErrors()) {
-			// Map<String, String> responseError = new HashMap<String, String>();
 			FieldError fieldError = errors.getFieldError();
-			String message = fieldError.getDefaultMessage();
-			// responseError.put("textSize", message);
-			return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+			String errorMessage = fieldError.getDefaultMessage();
+			return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
 		}
-		Map<String, Integer> output = textParser.parse(text.getText());
+		Map<String, Integer> output = textParser.parse(textForParsing.getText());
 		return new ResponseEntity<>(output, HttpStatus.OK);
 	}
 
-	@PostMapping(path = "/save", consumes = "application/json")
-	public ResponseEntity<Object> saveNewWordsList(@Valid @RequestBody SavedWordsList newWordsList, Errors errors, @RequestHeader("Authorization") String token) {
+	@PostMapping(path = "/saveParsedWords", consumes = "application/json")
+	public ResponseEntity<Object> saveNewTextAndWordsUnit(@Valid @RequestBody TextAndParsedWordsUnit newTextAndParsedWordsUnit, Errors errors, @RequestHeader("Authorization") String token) {
 		if (errors.hasErrors()) {
-			/*
-			 * Map<String, String> responseErrors = new HashMap<String, String>(); for
-			 * (FieldError fieldError : errors.getFieldErrors()) { String fieldName =
-			 * fieldError.getField(); String message = fieldError.getDefaultMessage();
-			 * responseErrors.put(fieldName, message); }
-			 */
 			FieldError fieldError = errors.getFieldError();
-			String message = fieldError.getDefaultMessage();
-
-			return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-
+			String errorMessage = fieldError.getDefaultMessage();
+			return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
 		} else {
 			String username = jwtTokenProvider.getUsername(token.substring(7));
 			User user = userRepo.findByUsername(username);
-			newWordsList.setUser(user);
-			wordsRepo.save(newWordsList);
-			return new ResponseEntity<>(newWordsList, HttpStatus.CREATED);
+			newTextAndParsedWordsUnit.setUser(user);
+			wordsRepo.save(newTextAndParsedWordsUnit);
+			return new ResponseEntity<>(newTextAndParsedWordsUnit, HttpStatus.CREATED);
 		}
 
 	}

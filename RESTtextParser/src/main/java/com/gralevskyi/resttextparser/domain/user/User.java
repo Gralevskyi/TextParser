@@ -1,4 +1,4 @@
-package com.gralevskyi.resttextparser.domain;
+package com.gralevskyi.resttextparser.domain.user;
 
 import java.util.List;
 
@@ -28,14 +28,13 @@ public class User {
 	private String email;
 	private String phone;
 	@Enumerated(EnumType.STRING)
-	private Status status;
+	private UserStatus userStatus;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private List<Role> roles;
 
 	public User(Long id, String username, String password, String fullname, String email, String phone, List<Role> roles) {
-		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -182,12 +181,12 @@ public class User {
 		this.password = password;
 	}
 
-	public Status getStatus() {
-		return status;
+	public UserStatus getStatus() {
+		return userStatus;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setStatus(UserStatus userStatus) {
+		this.userStatus = userStatus;
 	}
 
 	public List<Role> getRoles() {
